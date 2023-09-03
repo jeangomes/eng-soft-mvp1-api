@@ -1,35 +1,40 @@
-from flask import Flask, make_response, request, jsonify
+from flask import Flask, make_response, request, jsonify, redirect
+from flask_openapi3 import OpenAPI, Info, Tag
 
 from model import Session, Operation
+from schemas import OperationViewSchema, OperationSchema, ErrorSchema
 
-app = Flask(__name__)
+info = Info(title="Minha API", version="1.0.0")
+app = OpenAPI(__name__, info=info)
+
+# app = Flask(__name__)
+
+# definindo tags
+home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
+produto_tag = Tag(name="Produto", description="Adição, visualização e remoção de produtos à base")
 
 
-@app.route('/')
+@app.get('/', tags=[home_tag])
 def home():
-    html = """<!DOCTYPE html>
-    <html>
-        <body>
-        <h1>Home temp</h1>
-        <p> Documentação em produção!! </p>
-        </body>
-    </html>"""
-    return make_response(html), 200
+    """Redireciona para /openapi, tela que permite a escolha do estilo de documentação.
+    """
+    return redirect('/openapi')
 
 
-@app.route('/add_operation', methods=['POST'])
-def add_operation():
+@app.post('/operation', tags=[produto_tag],
+          responses={"200": OperationViewSchema, "409": ErrorSchema, "400": ErrorSchema})
+def add_operation(form: OperationSchema):
     """Adiciona uma nova Operação Financeira à base de dados
 
     Retorna uma representação dos produtos e comentários associados.
     """
     # lendo atributos recebidos da requisição
     operation = Operation(
-        operation_type=request.form.get("operation_type"),
-        code=request.form.get("code"),
-        quantity=int(request.form.get("quantity")),
-        price=float(request.form.get("price")),
-        operation_date=request.form.get("operation_date"),
+        operation_type=form.operation_type,
+        code=form.code,
+        quantity=int(form.quantity),
+        price=float(form.price),
+        operation_date=form.operation_date,
     )
     operation.operation_amount = operation.quantity * operation.price
     try:
