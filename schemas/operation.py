@@ -8,9 +8,9 @@ class OperationSchema(BaseModel):
     """
     operation_type: str = "Compra"
     code: str = "ITSA4"
-    quantity: int = 50
-    price: float = 12.50
-    operation_date: str = "2023-08-11"
+    quantity: int = 56
+    price: float = 12.25
+    operation_date: str = "2019-08-30"
 
 
 class OperationViewSchema(BaseModel):
@@ -18,9 +18,9 @@ class OperationViewSchema(BaseModel):
     """
     operation_type: str = "Compra"
     code: str = "ITSA4"
-    quantity: int = 50
-    price: float = 12.50
-    operation_date: str = "2023-08-11"
+    quantity: int = 56
+    price: float = 12.25
+    operation_date: str = "2019-08-30"
 
 
 def show_operation(operation: Operation):
@@ -28,6 +28,7 @@ def show_operation(operation: Operation):
         OperationViewSchema.
     """
     return {
+        "id": operation.id,
         "operation_type": operation.operation_type,
         "code": operation.code,
         "quantity": operation.quantity,

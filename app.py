@@ -1,8 +1,9 @@
-from flask import Flask, make_response, request, jsonify, redirect
+from flask import redirect
 from flask_openapi3 import OpenAPI, Info, Tag
 
 from model import Session, Operation
 from schemas import OperationViewSchema, OperationSchema, ErrorSchema
+from schemas.operation import show_operation
 
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
@@ -11,7 +12,7 @@ app = OpenAPI(__name__, info=info)
 
 # definindo tags
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
-produto_tag = Tag(name="Produto", description="Adição, visualização e remoção de produtos à base")
+operation_tag = Tag(name="Operação", description="Adição, visualização e remoção de operações financeiras à base")
 
 
 @app.get('/', tags=[home_tag])
@@ -21,12 +22,12 @@ def home():
     return redirect('/openapi')
 
 
-@app.post('/operation', tags=[produto_tag],
+@app.post('/operation', tags=[operation_tag],
           responses={"200": OperationViewSchema, "409": ErrorSchema, "400": ErrorSchema})
 def add_operation(form: OperationSchema):
     """Adiciona uma nova Operação Financeira à base de dados
 
-    Retorna uma representação dos produtos e comentários associados.
+    Retorna uma representação da operação.
     """
     # lendo atributos recebidos da requisição
     operation = Operation(
@@ -44,32 +45,13 @@ def add_operation(form: OperationSchema):
         session.add(operation)
         # efetivando o comando de adição de novo registro na tabela
         session.commit()
-
-        # criando JSON
-        operation_dict = {
-            "operation_type": operation.operation_type,
-            "code": operation.code,
-            "quantity": operation.quantity
-        }
-        resposta_json = jsonify(operation_dict)
-        # criando resposta
-        response = make_response(resposta_json, 200)
-
-        # imprimindo no console
-        print("Operation saved:\n", operation_dict)
+        return show_operation(operation)
 
     except Exception as e:
         print(e)
         # caso um erro fora do previsto
-        error = {"msg": "Não foi possível salvar a operação :/"}
-        # criando JSON
-        resposta_json = jsonify(error)
-        # criando resposta
-        response = make_response(resposta_json, 400)
-
-    # retornando resposta
-    response.headers["Content-Type"] = "application/json"
-    return response
+        error_msg = "Não foi possível salvar novo item :/"
+        return {"message": error_msg}, 400
 
 
 if __name__ == '__main__':
