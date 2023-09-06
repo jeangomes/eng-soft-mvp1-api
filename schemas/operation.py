@@ -1,10 +1,11 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List
 from model.operation import Operation
+from datetime import datetime
 
 
 class OperationSchema(BaseModel):
-    """ Define como um novo produto a ser inserido deve ser representado
+    """ Define como uma nova operação a ser inserida deve ser representada
     """
     operation_type: str = "Compra"
     code: str = "ITSA4"
@@ -13,8 +14,33 @@ class OperationSchema(BaseModel):
     operation_date: str = "2019-08-30"
 
 
+class ListOperationsSchema(BaseModel):
+    """ Define como uma listagem de operações será retornada.
+    """
+    operations: List[OperationSchema]
+
+
+def show_operations(operations: List[Operation]):
+    """ Retorna uma representação da operação seguindo o schema definido em
+        OperationViewSchema.
+    """
+    result = []
+    for operation in operations:
+        result.append({
+            "id": operation.id,
+            "operation_type": operation.operation_type,
+            "code": operation.code,
+            "quantity": operation.quantity,
+            "price": operation.price,
+            "operation_date": datetime.strptime(str(operation.operation_date), "%Y-%m-%d").strftime("%d/%m/%Y"),
+            "operation_amount": operation.operation_amount,
+        })
+
+    return {"operations": result}
+
+
 class OperationViewSchema(BaseModel):
-    """ Define como um produto será retornado: produto + comentários.
+    """ Define como ua operação será retornada: operation.
     """
     operation_type: str = "Compra"
     code: str = "ITSA4"

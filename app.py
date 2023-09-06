@@ -1,12 +1,15 @@
 from flask import redirect
 from flask_openapi3 import OpenAPI, Info, Tag
+from flask_cors import CORS
+from sqlalchemy.sql import text
 
 from model import Session, Operation
 from schemas import OperationViewSchema, OperationSchema, ErrorSchema
-from schemas.operation import show_operation
+from schemas.operation import show_operation, ListOperationsSchema, show_operations
 
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
+CORS(app)
 
 # app = Flask(__name__)
 
@@ -52,6 +55,27 @@ def add_operation(form: OperationSchema):
         # caso um erro fora do previsto
         error_msg = "Não foi possível salvar novo item :/"
         return {"message": error_msg}, 400
+
+
+@app.get('/operations', tags=[operation_tag],
+         responses={"200": ListOperationsSchema, "404": ErrorSchema})
+def get_operations():
+    """Faz a busca por todas as operações cadastrados
+
+    Retorna uma representação da listagem de operações.
+    """
+    # criando conexão com a base
+    session = Session()
+    # fazendo a busca
+    operations = session.query(Operation).order_by(text("operation_date desc")).all()
+
+    if not operations:
+        # se não há registros cadastrados
+        return {"operations": []}, 200
+    else:
+        # retorna a representação de produto
+        # print(operations)
+        return show_operations(operations), 200
 
 
 if __name__ == '__main__':
