@@ -63,3 +63,17 @@ def show_operation(operation: Operation):
         "operation_amount": operation.operation_amount,
         "created_at": operation.created_at
     }
+
+
+class OperationBuscaSchema(BaseModel):
+    """ Define como deve ser a estrutura que representa a busca.
+    """
+    operation_id: int = 1
+
+
+class OperationDelSchema(BaseModel):
+    """ Define como deve ser a estrutura do dado retornado após uma requisição
+        de exclusão.
+    """
+    message: str
+    nome: str

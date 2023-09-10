@@ -5,7 +5,8 @@ from sqlalchemy.sql import text
 
 from model import Session, Operation
 from schemas import OperationViewSchema, OperationSchema, ErrorSchema
-from schemas.operation import show_operation, ListOperationsSchema, show_operations
+from schemas.operation import show_operation, ListOperationsSchema, show_operations, OperationDelSchema, \
+    OperationBuscaSchema
 
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
@@ -73,9 +74,30 @@ def get_operations():
         # se não há registros cadastrados
         return {"operations": []}, 200
     else:
-        # retorna a representação de produto
+        # retorna a representação de uma operação
         # print(operations)
         return show_operations(operations), 200
+
+
+# Endpoint for deleting an operation
+@app.delete('/operation', tags=[operation_tag],
+            responses={"200": OperationDelSchema, "404": ErrorSchema})
+def del_operation(query: OperationBuscaSchema):
+    """Deleta uma operação financeira a partir do id informado
+
+    Retorna uma mensagem de confirmação da remoção.
+    """
+    operation_id = query.operation_id
+    session = Session()
+    # fazendo a exclusão
+    count = session.query(Operation).filter(Operation.id == operation_id).delete()
+    session.commit()
+
+    if count:
+        return {"message": "Operação financeira removida", "id": operation_id}
+    else:
+        error_msg = "Operação não encontrada na base :/"
+        return {"message": error_msg}, 404
 
 
 if __name__ == '__main__':
