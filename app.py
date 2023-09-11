@@ -100,5 +100,25 @@ def del_operation(query: OperationBuscaSchema):
         return {"message": error_msg}, 404
 
 
+@app.get('/operation', tags=[operation_tag],
+         responses={"200": OperationViewSchema, "404": ErrorSchema})
+def get_operation(query: OperationBuscaSchema):
+    """Faz a busca por uma operação a partir do id do registro
+
+    Retorna uma representação da operação financeira.
+    """
+    operation_id = query.operation_id
+    # criando conexão com a base
+    session = Session()
+    # fazendo a busca
+    operation = session.query(Operation).filter(Operation.id == operation_id).first()
+
+    if not operation:
+        error_msg = "Registro não encontrado na base :/"
+        return {"message": error_msg}, 404
+    else:
+        return show_operation(operation), 200
+
+
 if __name__ == '__main__':
     app.run()

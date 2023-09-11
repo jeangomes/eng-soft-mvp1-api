@@ -40,7 +40,7 @@ def show_operations(operations: List[Operation]):
 
 
 class OperationViewSchema(BaseModel):
-    """ Define como ua operação será retornada: operation.
+    """ Define como uma operação será retornada: operation.
     """
     operation_type: str = "Compra"
     code: str = "ITSA4"
@@ -59,7 +59,7 @@ def show_operation(operation: Operation):
         "code": operation.code,
         "quantity": operation.quantity,
         "price": operation.price,
-        "operation_date": operation.operation_date,
+        "operation_date": str(operation.operation_date),
         "operation_amount": operation.operation_amount,
         "created_at": operation.created_at
     }
