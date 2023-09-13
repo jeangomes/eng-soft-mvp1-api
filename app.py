@@ -4,6 +4,7 @@ from flask_cors import CORS
 from sqlalchemy.sql import text
 
 from model import Session, Operation
+from model.operation import format_date
 from schemas import OperationViewSchema, OperationSchema, ErrorSchema
 from schemas.operation import show_operation, ListOperationsSchema, show_operations, OperationDelSchema, \
     OperationBuscaSchema
@@ -118,6 +119,26 @@ def get_operation(query: OperationBuscaSchema):
         return {"message": error_msg}, 404
     else:
         return show_operation(operation), 200
+
+
+# Endpoint for updating a finance operation
+@app.put('/operation/<int:operation_id>', tags=[operation_tag])
+def operation_update(path: OperationBuscaSchema, body: OperationSchema):
+    print(path)
+    print(body)
+    session = Session()
+    operation = session.query(Operation).filter(Operation.id == path.operation_id).first()
+    if operation:
+        operation.operation_type = body.operation_type
+        operation.code = body.code
+        operation.quantity = int(body.quantity)
+        operation.price = float(body.price)
+        operation.operation_date = format_date(body.operation_date)
+        operation.operation_amount = operation.quantity * operation.price
+        session.commit()
+        return show_operation(operation), 200
+    else:
+        return {"message": "Registro não encontrado para esse id"}, 404
 
 
 if __name__ == '__main__':
