@@ -61,7 +61,7 @@ def add_operation(form: OperationSchema):
 
 @app.get('/operations', tags=[operation_tag],
          responses={"200": ListOperationsSchema, "404": ErrorSchema})
-def get_operations():
+def get_operations(query: OperationBuscaSchema):
     """Faz a busca por todas as operações cadastrados
 
     Retorna uma representação da listagem de operações.
@@ -69,7 +69,13 @@ def get_operations():
     # criando conexão com a base
     session = Session()
     # fazendo a busca
-    operations = session.query(Operation).order_by(text("operation_date desc")).all()
+    if query.code:
+        operations = (session.query(Operation)
+                      .where(Operation.code == query.code)
+                      .order_by(text("operation_date desc"))
+                      .all())
+    else:
+        operations = session.query(Operation).order_by(text("operation_date desc")).all()
 
     if not operations:
         # se não há registros cadastrados
@@ -124,8 +130,6 @@ def get_operation(query: OperationBuscaSchema):
 # Endpoint for updating a finance operation
 @app.put('/operation/<int:operation_id>', tags=[operation_tag])
 def operation_update(path: OperationBuscaSchema, body: OperationSchema):
-    print(path)
-    print(body)
     session = Session()
     operation = session.query(Operation).filter(Operation.id == path.operation_id).first()
     if operation:
