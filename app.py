@@ -2,6 +2,7 @@ from flask import redirect
 from flask_openapi3 import OpenAPI, Info, Tag
 from flask_cors import CORS
 from sqlalchemy.sql import text
+from sqlalchemy import func
 
 from model import Session, Operation
 from model.operation import format_date
@@ -12,8 +13,6 @@ from schemas.operation import show_operation, ListOperationsSchema, show_operati
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
-
-# app = Flask(__name__)
 
 # definindo tags
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
@@ -71,7 +70,7 @@ def get_operations(query: OperationBuscaSchema):
     # fazendo a busca
     if query.code:
         operations = (session.query(Operation)
-                      .where(Operation.code == query.code)
+                      .where(func.lower(Operation.code) == query.code.lower())
                       .order_by(text("operation_date desc"))
                       .all())
     else:
