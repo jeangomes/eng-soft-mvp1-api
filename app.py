@@ -10,20 +10,20 @@ from schemas import OperationViewSchema, OperationSchema, ErrorSchema
 from schemas.operation import show_operation, ListOperationsSchema, show_operations, OperationDelSchema, \
     OperationBuscaSchema
 
-info = Info(title="Minha API", version="1.0.0")
+info = Info(title="Minha API - EngSoft MVP1", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
 
 # definindo tags
-home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
-operation_tag = Tag(name="Operação", description="Adição, visualização e remoção de operações financeiras à base")
+home_tag = Tag(name="Documentação", description="Documentação em Swagger")
+operation_tag = Tag(name="Operação", description="Adição, visualização, alteração e remoção de operações financeiras")
 
 
 @app.get('/', tags=[home_tag])
 def home():
-    """Redireciona para /openapi, tela que permite a escolha do estilo de documentação.
+    """Redireciona para a documentação em Swagger.
     """
-    return redirect('/openapi')
+    return redirect('/openapi/swagger')
 
 
 @app.post('/operation', tags=[operation_tag],
@@ -61,7 +61,7 @@ def add_operation(form: OperationSchema):
 @app.get('/operations', tags=[operation_tag],
          responses={"200": ListOperationsSchema, "404": ErrorSchema})
 def get_operations(query: OperationBuscaSchema):
-    """Faz a busca por todas as operações cadastrados
+    """Faz a busca por todas as operações cadastrados, permitindo filtrar pelo código de negociação.
 
     Retorna uma representação da listagem de operações.
     """
