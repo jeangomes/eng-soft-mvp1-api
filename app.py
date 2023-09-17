@@ -129,6 +129,10 @@ def get_operation(query: OperationBuscaSchema):
 # Endpoint for updating a finance operation
 @app.put('/operation/<int:operation_id>', tags=[operation_tag])
 def operation_update(path: OperationBuscaSchema, body: OperationSchema):
+    """Faz o update de um registro selecionado pelo id
+
+    Retorna uma representação da operação financeira atualizada.
+    """
     session = Session()
     operation = session.query(Operation).filter(Operation.id == path.operation_id).first()
     if operation:
