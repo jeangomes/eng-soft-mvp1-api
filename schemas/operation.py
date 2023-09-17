@@ -69,6 +69,7 @@ class OperationBuscaSchema(BaseModel):
     """ Define como deve ser a estrutura que representa a busca.
     """
     operation_id: int = 1
+    code: str = ''
 
 
 class OperationDelSchema(BaseModel):
