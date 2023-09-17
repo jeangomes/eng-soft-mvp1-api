@@ -70,7 +70,7 @@ def get_operations(query: OperationBuscaSchema):
     # fazendo a busca
     if query.code:
         operations = (session.query(Operation)
-                      .where(func.lower(Operation.code) == query.code.lower())
+                      .where(func.upper(Operation.code) == query.code.upper())
                       .order_by(text("operation_date desc"))
                       .all())
     else:

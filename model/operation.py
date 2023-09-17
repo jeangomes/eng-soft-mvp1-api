@@ -34,7 +34,7 @@ class Operation(Base):
             operation_date: data de quando o ativo foi negociado
         """
         self.operation_type = operation_type
-        self.code = code
+        self.code = code.upper()
         self.quantity = quantity
         self.price = price
         self.operation_date = format_date(operation_date)
