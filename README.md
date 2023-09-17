@@ -1,9 +1,25 @@
-# eng-soft-mvp1-api
+# eng-soft-mvp1-api - Gestão de compra de ativos financeiros
 API em Python usando Flask para projeto do curso de pós graduação.
 
-Contém funcionalidades para cadastrar compras de ativos do mercado financeiro, 
-como ações e fundos imobiliários, um gerenciamento básico da carteira de um investidor iniciante.
+Contém funcionalidades para gestão de ativos do mercado financeiro, 
+como cadastro e listagem de compras de ações e fundos imobiliários, um gerenciamento básico da carteira de um investidor iniciante.
 
+Por se tratar de um MVP, o projeto atualmente persiste os dados em um banco de dados SQLite.
+
+## Funcionalidades/endpoints:
+
+- [POST] `/operation`
+
+  Adiciona uma nova operação financeira à base de dados.
+
+  - **Entrada**: Tipo de operação, código do ativo, quantidade, cotação e data da operação.
+
+- [GET] `/operations`
+
+  Retorna a listagem de todas as operações registradas.
+
+##### * É possível também deletar e alterar os registros, verifique a documentação completa das rotas.
+Após rodar o projeto, acesse: [http://localhost:5000/openapi/swagger](http://localhost:5000/openapi/swagger)
 
 ## Como executar o código
 
